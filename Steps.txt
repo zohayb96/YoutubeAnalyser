@@ -31,3 +31,12 @@ and Add provider to the index
 // Add Script to seed database with users
 
 // Added security by encrypting password using hash and salt - now all passwords seeded will generate salt and encrypted password for the users
+
+// Add Youtube embedded video player
+// Regex function to get video id from video link
+// Set to state - > use to get captions for particular video
+
+// Problem as security google doesnt allow you to request more than certain number of captions for videos - work around is to work for only when uploader has allower captions
+
+// PArsing xml data, to get start , duration and text
+// Create table to display data
