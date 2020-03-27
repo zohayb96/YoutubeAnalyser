@@ -1,0 +1,33 @@
+1.Setup Environment with gitignore
+  Ignore the following files:
+  node_modules
+  bundle.js
+  bundle.js.map
+
+2. Create Index Html File.
+
+Setup Express Server for backend
+
+Setup Express Server
+
+Install Dependenices
+Webpack, Babel, React Router React Router Dom
+
+Setup Package Json Start scripts to initialize webpack and to run both the server and client side code
+
+//////// React Setup Complete
+
+/// Setup Redux
+npm install --save redux react-redux
+npm install --save redux-thunk redux-logger
+
+Setup Redux reducers and Store
+and Add provider to the index
+
+/// SETUP DATABASE
+// createDb youtubeProj
+
+// Setup Basic user Sequelize model and create srat script for database.
+// Add Script to seed database with users
+
+// Added security by encrypting password using hash and salt - now all passwords seeded will generate salt and encrypted password for the users
