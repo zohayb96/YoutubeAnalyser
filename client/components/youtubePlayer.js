@@ -4,15 +4,16 @@ import YouTube from 'react-youtube';
 import axios from 'axios';
 import { isNullOrUndefined } from 'util';
 import { decode } from 'querystring';
-import SubTitleTable from './subtitleTable'
+import SubtitleTable from './subtitleTable'
 
 class YoutubePlayer extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      videoId: '',
+      videoId: '2g811Eo7K8U',
       videoLink: '',
-      subtitleList: []
+      subtitleList: [],
+      seekTime: 0
       // ?t=51 time parameter to seek to that time
     }
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -56,12 +57,11 @@ class YoutubePlayer extends Component {
       var formattedText = mystring[4].slice(mystring[4].lastIndexOf('>') + 1);
       tempSubArray.push({
         start: parseFloat(mystring[1]),
-        end: parseFloat(mystring[3]),
+        end: parseFloat(mystring[1]) + parseFloat(mystring[3]),
         text: formattedText
       })
     }
     this.setState({ subtitleList: tempSubArray })
-    console.log(this.state)
   }
 
   async getCaptions(videoData) {
@@ -82,31 +82,61 @@ class YoutubePlayer extends Component {
     // AXIOS
     const videoUrl = `http://video.google.com/timedtext?lang=en&v=${video}`
     this.setState({ videoId: video })
-    // this.getCaptions(videoUrl)
+    this.getCaptions(videoUrl)
     const captions = await axios.get(videoUrl).then(res => this.getCaptions(res));
+    // event.target.playVideo();
   }
+
+  seekToTime(time) {
+    var intvalue = Math.floor(time);
+    let timeSeek = (this.state.videoId + '?t=' + intvalue)
+    this.setState({ seekTime: intvalue })
+    console.log(this.state)
+  }
+
 
   render() {
     const opts = {
       height: '200',
       width: '350',
-      playerVars: { // https://developers.google.com/youtube/player_parameters
-        autoplay: 1
+      playerVars: {
+        autoplay: 0
       }
     };
 
     return (
-      <div>
+      <div id="youtube">
         <YouTube
           videoId={this.state.videoId}
           opts={opts}
           onReady={this._onReady}
+        // seekTo={this.seekTo}
         />
         <form>
-          <input className="field" type="text" placeholder="Youtube Video Link" required="" width="100%" name="video" onChange={this.handleChange} value={this.state.videoLink}></input>
+          <input className="field" type="text" placeholder="Youtube Video Link" required="" name="video" onChange={this.handleChange} value={this.state.videoLink}></input>
           <button type="submit" onClick={this.handleSubmit}>Submit</button>
         </form>
-        <subtitleTable subs={this.state.subtitleList} />
+        <center>
+          <table>
+            <th>Start</th>
+            <th>End</th>
+            <th>Text</th>
+            {this.state.subtitleList.map(sub => {
+              // return <SubtitleTable subtitleData={sub} vidId={}/>
+              return (
+                <tr key={sub.start}>
+                  <td >
+                    {new Date(sub.start * 1000).toISOString().substr(11, 8)}
+                  </td>
+                  <td onClick={() => this.seekToTime(sub.end)}>
+                    {new Date(sub.end * 1000).toISOString().substr(11, 8)}
+                  </td>
+                  <td>{sub.text}</td>
+                </tr>
+              )
+            })}
+          </table>
+        </center>
       </div>
     )
   }
