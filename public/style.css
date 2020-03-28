@@ -28,3 +28,8 @@ form div {
   display: flex;
   align-items: left;
 }
+
+#youtube .player {
+  display: flex;
+  align-items: right;
+}

@@ -5,6 +5,7 @@ import axios from 'axios';
 import { isNullOrUndefined } from 'util';
 import { decode } from 'querystring';
 import SubtitleTable from './subtitleTable'
+var lda = require('lda');
 
 class YoutubePlayer extends Component {
   constructor(props) {
@@ -13,11 +14,13 @@ class YoutubePlayer extends Component {
       videoId: '2g811Eo7K8U',
       videoLink: '',
       subtitleList: [],
-      seekTime: 0
+      seekTime: 0,
+      topics: []
       // ?t=51 time parameter to seek to that time
     }
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleChange = this.handleChange.bind(this);
+    this.generateTopicModel = this.generateTopicModel.bind(this);
   }
 
   parseLinkIntoId(url) {
@@ -73,7 +76,9 @@ class YoutubePlayer extends Component {
     let subtitleArray = replaceSpecial.split('</text>')
     // console.log(subtitleArray)
     this.createObject(subtitleArray)
+    this.generateTopicModel();
   }
+
 
   async handleSubmit(event) {
     // Stop trigger of refresh
@@ -91,7 +96,31 @@ class YoutubePlayer extends Component {
     var intvalue = Math.floor(time);
     let timeSeek = (this.state.videoId + '?t=' + intvalue)
     this.setState({ seekTime: intvalue })
-    console.log(this.state)
+  }
+
+  getSubtitleDocFormat() {
+    let subtitleTextList = []
+    let subList = this.state.subtitleList
+    for (var i in subList) {
+      subtitleTextList.push(subList[i].text)
+    }
+    return subtitleTextList
+  }
+
+  generateTopicModel() {
+    event.preventDefault()
+    let tempTopicDict = []
+    var text = 'Cats are small. Dogs are big. Cats like to chase mice. Dogs like to eat bones.';
+    var documents = text.match(/[^\.!\?]+[\.!\?]+/g);
+    // console.log(documents)
+    let documentSubtitles = this.getSubtitleDocFormat()
+    console.log(documentSubtitles)
+    // Run LDA to get terms for 2 topics (5 terms each).
+    // var i, j, temparray, chunk = 10;
+    // for (i = 0, j = documentSubtitles.length; i < j; i += chunk) {
+    // temparray = documentSubtitles.slice(i, i + chunk);
+    var ldaResult = lda(documentSubtitles, 8, 5);
+    this.setState({ topics: ldaResult })
   }
 
 
@@ -106,17 +135,23 @@ class YoutubePlayer extends Component {
 
     return (
       <div id="youtube">
-        <YouTube
-          videoId={this.state.videoId}
-          opts={opts}
-          onReady={this._onReady}
-        // seekTo={this.seekTo}
-        />
-        <form>
-          <input className="field" type="text" placeholder="Youtube Video Link" required="" name="video" onChange={this.handleChange} value={this.state.videoLink}></input>
-          <button type="submit" onClick={this.handleSubmit}>Submit</button>
-        </form>
+        <div id="player">
+          <YouTube
+            videoId={this.state.videoId}
+            opts={opts}
+            onReady={this._onReady}
+          // seekTo={this.seekTo}
+          />
+          <form>
+            <input className="field" type="text" placeholder="Youtube Video Link" required="" name="video" onChange={this.handleChange} value={this.state.videoLink}></input>
+            <button type="submit" onClick={this.handleSubmit}>Submit</button>
+          </form>
+        </div>
         <center>
+          {/* <form> */}
+          {/* <input className="field" type="text" placeholder="Search"></input> */}
+          {/* <button onClick={this.generateTopicModel}>PRESS MEEEEE</button> */}
+          {/* </form> */}
           <table>
             <th>Start</th>
             <th>End</th>
@@ -124,7 +159,7 @@ class YoutubePlayer extends Component {
             {this.state.subtitleList.map(sub => {
               // return <SubtitleTable subtitleData={sub} vidId={}/>
               return (
-                <tr key={sub.start}>
+                <tr key={sub.key}>
                   <td >
                     {new Date(sub.start * 1000).toISOString().substr(11, 8)}
                   </td>
@@ -137,6 +172,29 @@ class YoutubePlayer extends Component {
             })}
           </table>
         </center>
+        <table>
+          {this.state.topics.map((topic, index) => {
+            return (
+              <div>
+                <th>Topic {index}</th>
+                <tr>
+                  {topic.map(topicData => {
+                    return (
+                      <div>
+                        <td>
+                          {topicData.term.toString()}
+                        </td>
+                        <td>
+                          {topicData.probability}
+                        </td>
+                      </div>
+                    )
+                  })}
+                </tr>
+              </div>
+            )
+          })}
+        </table>
       </div>
     )
   }
