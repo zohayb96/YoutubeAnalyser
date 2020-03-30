@@ -11,15 +11,21 @@ class YoutubePlayer extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      videoId: '2g811Eo7K8U',
+      // default video
+      videoId: '6Af6b_wyiwI',
       videoLink: '',
       subtitleList: [],
       seekTime: 0,
-      topics: []
+      topics: [],
+      search: '',
+      // LDA Topic Modeling Parameters
+      topicNumber: 5,
+      termNumber: 3
       // ?t=51 time parameter to seek to that time
     }
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleChange = this.handleChange.bind(this);
+    this.handleSearch = this.handleSearch.bind(this);
     this.generateTopicModel = this.generateTopicModel.bind(this);
   }
 
@@ -42,6 +48,11 @@ class YoutubePlayer extends Component {
 
   handleChange(event) {
     this.setState({ videoLink: event.target.value })
+    console.log(this.state)
+  }
+
+  handleSearch(event) {
+    this.setState({ search: event.target.value })
     console.log(this.state)
   }
 
@@ -73,6 +84,7 @@ class YoutubePlayer extends Component {
     var doc = new DOMParser().parseFromString(videoData.data, "text/xml");
     let innerData = (doc.firstChild.innerHTML);
     var replaceSpecial = innerData.replace(/&amp;#39;/g, "'");
+    // replaceSpecial.replace(/&amp;quot;/g, "'");
     let subtitleArray = replaceSpecial.split('</text>')
     // console.log(subtitleArray)
     this.createObject(subtitleArray)
@@ -86,7 +98,7 @@ class YoutubePlayer extends Component {
     const video = String(this.parseLinkIntoId(this.state.videoLink))
     // AXIOS
     const videoUrl = `http://video.google.com/timedtext?lang=en&v=${video}`
-    this.setState({ videoId: video })
+    this.setState({ videoId: video, seekTime: 0 })
     this.getCaptions(videoUrl)
     const captions = await axios.get(videoUrl).then(res => this.getCaptions(res));
     // event.target.playVideo();
@@ -94,7 +106,7 @@ class YoutubePlayer extends Component {
 
   seekToTime(time) {
     var intvalue = Math.floor(time);
-    let timeSeek = (this.state.videoId + '?t=' + intvalue)
+    // let timeSeek = (this.state.videoId + '?t=' + intvalue)
     this.setState({ seekTime: intvalue })
   }
 
@@ -114,27 +126,37 @@ class YoutubePlayer extends Component {
     var documents = text.match(/[^\.!\?]+[\.!\?]+/g);
     // console.log(documents)
     let documentSubtitles = this.getSubtitleDocFormat()
-    console.log(documentSubtitles)
+    // console.log(documentSubtitles)
     // Run LDA to get terms for 2 topics (5 terms each).
     // var i, j, temparray, chunk = 10;
     // for (i = 0, j = documentSubtitles.length; i < j; i += chunk) {
     // temparray = documentSubtitles.slice(i, i + chunk);
-    var ldaResult = lda(documentSubtitles, 8, 5);
+
+    // number of topics
+    //this.state.topicNumber
+
+    // number of terms
+    // this.state.termsNumber
+    var ldaResult = lda(documentSubtitles, this.state.topicNumber, this.state.termNumber);
     this.setState({ topics: ldaResult })
   }
 
 
   render() {
+    let filteredCaptionData = this.state.subtitleList.filter((sub) => {
+      return sub.text.toLowerCase().indexOf(this.state.search.toLowerCase()) !== -1
+    });
     const opts = {
       height: '200',
       width: '350',
       playerVars: {
-        autoplay: 0
+        autoplay: 1,
+        start: this.state.seekTime
       }
     };
 
     return (
-      <div id="youtube">
+      <div id="youtube" >
         <div id="player">
           <YouTube
             videoId={this.state.videoId}
@@ -146,55 +168,79 @@ class YoutubePlayer extends Component {
             <input className="field" type="text" placeholder="Youtube Video Link" required="" name="video" onChange={this.handleChange} value={this.state.videoLink}></input>
             <button type="submit" onClick={this.handleSubmit}>Submit</button>
           </form>
+          <form className="form" id="textSearch" onChange={this.handleSearch}>
+            <input
+              type="text"
+              placeholder="Search"
+            />
+          </form>
         </div>
         <center>
-          {/* <form> */}
-          {/* <input className="field" type="text" placeholder="Search"></input> */}
-          {/* <button onClick={this.generateTopicModel}>PRESS MEEEEE</button> */}
-          {/* </form> */}
-          <table>
-            <th>Start</th>
-            <th>End</th>
-            <th>Text</th>
-            {this.state.subtitleList.map(sub => {
-              // return <SubtitleTable subtitleData={sub} vidId={}/>
-              return (
-                <tr key={sub.key}>
-                  <td >
-                    {new Date(sub.start * 1000).toISOString().substr(11, 8)}
-                  </td>
-                  <td onClick={() => this.seekToTime(sub.end)}>
-                    {new Date(sub.end * 1000).toISOString().substr(11, 8)}
-                  </td>
-                  <td>{sub.text}</td>
-                </tr>
-              )
-            })}
-          </table>
-        </center>
-        <table>
-          {this.state.topics.map((topic, index) => {
-            return (
-              <div>
-                <th>Topic {index}</th>
-                <tr>
-                  {topic.map(topicData => {
+          <div id="captions">
+            {/* ?? */}
+            {/* SEARCH!!! */}
+            {this.state.subtitleList.length !== 0 ? (
+              <table border="1" >
+                <thead>
+                  <th>Start</th>
+                  <th>End</th>
+                  <th>Text</th>
+                </thead>
+                <tbody>
+                  {filteredCaptionData.map(sub => {
+                    // return <SubtitleTable subtitleData={sub} vidId={}/>
                     return (
-                      <div>
-                        <td>
-                          {topicData.term.toString()}
+                      <tr key={sub.key}>
+                        <td onClick={() => this.seekToTime(sub.start)}>
+                          {new Date(sub.start * 1000).toISOString().substr(11, 8)}
                         </td>
-                        <td>
-                          {topicData.probability}
+                        <td onClick={() => this.seekToTime(sub.end)}>
+                          {new Date(sub.end * 1000).toISOString().substr(11, 8)}
                         </td>
-                      </div>
+                        <td>{sub.text}</td>
+                      </tr>
                     )
                   })}
-                </tr>
-              </div>
-            )
-          })}
-        </table>
+                </tbody>
+              </table>
+            ) : (
+                <p>
+                  {/* no content */}
+                </p>
+              )
+            }
+          </div>
+        </center>
+        <div id="topics">
+          {this.state.topics.length !== 0 ? (
+            <table border="2">
+              {this.state.topics.map((topic, index) => {
+                return (
+                  <div>
+                    <th>Topic {index + 1}</th>
+                    <tr>
+                      {topic.map(topicData => {
+                        return (
+                          <div>
+                            <td>
+                              {topicData.term.toString()}
+                            </td>
+                            <td>
+                              {topicData.probability + '%'}
+                            </td>
+                          </div>
+                        )
+                      })}
+                    </tr>
+                  </div>
+                )
+              })}
+            </table>
+          ) : (
+              // No content
+              <p></p>
+            )}
+        </div>
       </div>
     )
   }

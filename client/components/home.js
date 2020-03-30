@@ -11,7 +11,7 @@ const Home = ({ isLoggedIn, email }) => {
           <div className="homeContainer">
             <div className="overlay-desc">
               <center>
-                <h2>Welcome {email}</h2>
+                <p>Welcome {email}</p>
                 <YoutubePlayer />
               </center>
             </div>

@@ -33,3 +33,20 @@ form div {
   display: flex;
   align-items: right;
 }
+
+#youtube #captions {
+  display: flex;
+  overflow: auto;
+  max-height: 90vh;
+}
+
+#youtube #topics {
+  display: flex;
+  overflow: auto;
+  max-height: 90vh;
+}
+
+td {
+  /* text-align: center; */
+  /* vertical-align: middle; */
+}
