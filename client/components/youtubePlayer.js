@@ -94,20 +94,30 @@ class YoutubePlayer extends Component {
     this.generateTopicModel();
   }
 
+  capitalize(s) {
+    if (typeof s !== 'string') return ''
+    return s.charAt(0).toUpperCase() + s.slice(1)
+  }
+
 
   async handleSubmit(event) {
     // Stop trigger of refresh
     event.preventDefault()
     // RESET STATE
-    this.setState({
-      subtitleList: [],
-      seekTime: 0,
-      topics: [],
-      keywordList: [],
-      search: ''
-    })
 
     const video = String(this.parseLinkIntoId(this.state.videoLink))
+
+    // console.log(this.state.videoId)
+    // console.log(video)
+
+    this.setState({
+      topics: [],
+      subtitleList: [],
+      posKeyWords: [],
+      negKeyWords: [],
+      seekTime: 0,
+      search: ''
+    })
     // AXIOS
     // const videoUrl = `https://video.google.com/timedtext?lang=en&v=${video}`
     const videoUrl = `https://video.google.com/timedtext?lang=en&v=${video}`
@@ -161,10 +171,10 @@ class YoutubePlayer extends Component {
 
     let sentimentDataChunk = (sentiment.analyze(documentSubtitles.join(',')))
     sentimentDataChunk.positive.map((posData) => {
-      sentimentDataPos.push(posData)
+      sentimentDataPos.push(this.capitalize(posData))
     })
     sentimentDataChunk.negative.map((negData) => {
-      sentimentDataNeg.push(negData)
+      sentimentDataNeg.push(this.capitalize(negData))
     })
 
     let posSetWords = [...new Set(sentimentDataPos)];
@@ -176,6 +186,16 @@ class YoutubePlayer extends Component {
     var ldaResult = lda(documentSubtitles, this.state.topicNumber, this.state.termNumber);
 
     this.setState({ topics: ldaResult, posKeyWords: posSetWords, negKeyWords: negSetWords, sentimentScore: sentimentScoreData })
+  }
+
+  doNothing() {
+    event.preventDefault()
+    return false
+  }
+
+  setSearchParam(searchTerm) {
+    document.getElementById("textSearch").value = searchTerm;
+    this.setState({ search: searchTerm })
   }
 
 
@@ -208,11 +228,12 @@ class YoutubePlayer extends Component {
             <input className="field" type="text" id="youtubeLink" placeholder="Youtube Video Link" required="" name="video" onChange={this.handleChange} value={this.state.videoLink}></input>
             <button type="submit" onClick={this.handleSubmit}>Submit</button>
           </form>
-          <form className="form" onChange={this.handleSearch}>
+          <form className="form" onChange={this.handleSearch} onSubmit={this.doNothing}>
             <input
               id="textSearch"
               type="text"
               placeholder="Search"
+              onSubmit={this.doNothing}
             />
           </form>
           {(this.state.posKeyWords.length !== 0 && this.state.negKeyWords.length !== 0) ? (
@@ -222,7 +243,7 @@ class YoutubePlayer extends Component {
                   <th>Positive Key Words</th>
                   {this.state.posKeyWords.map((posWord, index) => {
                     return (
-                      <tr key={index}>
+                      <tr key={index} onClick={() => this.setSearchParam(posWord)}>
                         <td>
                           {posWord}
                         </td>
@@ -235,7 +256,7 @@ class YoutubePlayer extends Component {
                 <th>Negative Key Words</th>
                 {this.state.negKeyWords.map((negWord, index) => {
                   return (
-                    <tr key={index}>
+                    <tr key={index} onClick={() => this.setSearchParam(negWord)}>
                       <td>
                         {negWord}
                       </td>
@@ -277,8 +298,8 @@ class YoutubePlayer extends Component {
                           </td>
                           <td onClick={() => this.seekToTime(sub.end)}>
                             {new Date(sub.end * 1000).toISOString().substr(11, 8)}
-                          </td>
-                          <td>{sub.text}</td>
+                          </td >
+                          <td onClick={() => this.seekToTime(sub.start)}>{sub.text}</td>
                         </tr>
                       )
                     })}
@@ -299,20 +320,26 @@ class YoutubePlayer extends Component {
                   return (
                     <React.Fragment key={index}>
                       <th>Topic {index + 1}</th>
-                      <tr>
-                        {topic.map((topicData, index) => {
-                          return (
-                            <div id={index}>
-                              <td>
-                                {topicData.term.toString()}
+                      <th>%</th>
+                      {topic.map((topicData, index) => {
+                        return (
+                          // <div id={index}>
+                          <tbody>
+                            <tr>
+                              <td onClick={() => this.setSearchParam(topicData.term.toString())}>
+                                {this.capitalize((topicData.term.toString()))}
                               </td>
                               <td>
-                                {topicData.probability}
+                                {(topicData.probability * 100).toFixed(1)}
                               </td>
-                            </div>
-                          )
-                        })}
-                      </tr>
+                            </tr>
+                          </tbody>
+                          // <td>
+                          // {topicData.probability}
+                          // </td>
+                          // </div>
+                        )
+                      })}
                     </React.Fragment>
                   )
                 })}

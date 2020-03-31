@@ -70,7 +70,8 @@ form div {
   max-height: 80vh;
   background-color: rgb(255, 255, 255);
   color: rgb(0, 0, 0);
-  height: fit-content
+  height: fit-content;
+  cursor: pointer;
 }
 
 #youtube #topics {
@@ -79,8 +80,11 @@ form div {
   max-height: 80vh;
   background-color: rgb(255, 255, 255);
   color: rgb(0, 0, 0);
-  height: fit-content
+  height: fit-content;
+  margin-left: 2px;
+  margin-right: 3px;
 }
+
 
 #youtube #keywords {
   display: flex;
