@@ -6,6 +6,7 @@ import { isNullOrUndefined } from 'util';
 import { decode } from 'querystring';
 import SubtitleTable from './subtitleTable'
 var lda = require('lda');
+var keywordExtractor = require("keyword-extractor");
 
 class YoutubePlayer extends Component {
   constructor(props) {
@@ -17,6 +18,7 @@ class YoutubePlayer extends Component {
       subtitleList: [],
       seekTime: 0,
       topics: [],
+      keywordList: [],
       search: '',
       // LDA Topic Modeling Parameters
       topicNumber: 5,
@@ -126,11 +128,25 @@ class YoutubePlayer extends Component {
     var documents = text.match(/[^\.!\?]+[\.!\?]+/g);
     // console.log(documents)
     let documentSubtitles = this.getSubtitleDocFormat()
+    console.log(documentSubtitles.length)
     // console.log(documentSubtitles)
     // Run LDA to get terms for 2 topics (5 terms each).
-    // var i, j, temparray, chunk = 10;
-    // for (i = 0, j = documentSubtitles.length; i < j; i += chunk) {
-    // temparray = documentSubtitles.slice(i, i + chunk);
+
+    // Convert subtitle list into chunked array to apply keyword extraction
+    // Default is 10
+    var i, j, temparray, chunk = 10;
+    let keywordsExtracted = []
+    for (i = 0, j = documentSubtitles.length; i < j; i += chunk) {
+      temparray = documentSubtitles.slice(i, i + chunk);
+      var extractionResult = keywordExtractor.extract(temparray, {
+        language: "english",
+        remove_digits: true,
+        return_changed_case: true,
+        remove_duplicates: true,
+        return_chained_words: false,
+      });
+      keywordsExtracted.push(extractionResult)
+    }
 
     // number of topics
     //this.state.topicNumber
@@ -138,7 +154,7 @@ class YoutubePlayer extends Component {
     // number of terms
     // this.state.termsNumber
     var ldaResult = lda(documentSubtitles, this.state.topicNumber, this.state.termNumber);
-    this.setState({ topics: ldaResult })
+    this.setState({ topics: ldaResult, keywordList: keywordsExtracted })
   }
 
 
@@ -157,30 +173,59 @@ class YoutubePlayer extends Component {
 
     return (
       <div id="youtube" >
-        <div id="player">
-          <YouTube
-            videoId={this.state.videoId}
-            opts={opts}
-            onReady={this._onReady}
-          // seekTo={this.seekTo}
-          />
+        <div id="playerContainer">
+          <div id="player">
+            <YouTube
+              videoId={this.state.videoId}
+              opts={opts}
+              onReady={this._onReady}
+            // seekTo={this.seekTo}
+            />
+          </div>
           <form>
-            <input className="field" type="text" placeholder="Youtube Video Link" required="" name="video" onChange={this.handleChange} value={this.state.videoLink}></input>
+            <input className="field" type="text" id="youtubeLink" placeholder="Youtube Video Link" required="" name="video" onChange={this.handleChange} value={this.state.videoLink}></input>
             <button type="submit" onClick={this.handleSubmit}>Submit</button>
           </form>
-          <form className="form" id="textSearch" onChange={this.handleSearch}>
+          <form className="form" onChange={this.handleSearch}>
             <input
+              id="textSearch"
               type="text"
               placeholder="Search"
             />
           </form>
+          {this.state.keywordList.length !== 0 ? (
+            <div id="keywords">
+              <table border="1" >
+                <th>Keywords Extracted</th>
+                {this.state.keywordList.map((words, index) => {
+                  return (
+                    <tr>
+                      {words.map(word => {
+                        return (
+                          <div>
+                            <td>
+                              {word}
+                            </td>
+                          </div>
+                        )
+                      })}
+                    </tr>
+                  )
+                })}
+              </table>
+            </div>
+          ) : (
+              // No content
+              <p></p>
+            )}
         </div>
-        <center>
+        <div id="captionContainer">
+          {/* <div id="captionContainer"> */}
           <div id="captions">
             {/* ?? */}
             {/* SEARCH!!! */}
             {this.state.subtitleList.length !== 0 ? (
-              <table border="1" >
+              <table border="1">
                 <thead>
                   <th>Start</th>
                   <th>End</th>
@@ -210,36 +255,36 @@ class YoutubePlayer extends Component {
               )
             }
           </div>
-        </center>
-        <div id="topics">
-          {this.state.topics.length !== 0 ? (
-            <table border="2">
-              {this.state.topics.map((topic, index) => {
-                return (
-                  <div>
-                    <th>Topic {index + 1}</th>
-                    <tr>
-                      {topic.map(topicData => {
-                        return (
-                          <div>
-                            <td>
-                              {topicData.term.toString()}
-                            </td>
-                            <td>
-                              {topicData.probability + '%'}
-                            </td>
-                          </div>
-                        )
-                      })}
-                    </tr>
-                  </div>
-                )
-              })}
-            </table>
-          ) : (
-              // No content
-              <p></p>
-            )}
+          <div id="topics">
+            {this.state.topics.length !== 0 ? (
+              <table border="1">
+                {this.state.topics.map((topic, index) => {
+                  return (
+                    <div>
+                      <th>Topic {index + 1}</th>
+                      <tr>
+                        {topic.map(topicData => {
+                          return (
+                            <div>
+                              <td>
+                                {topicData.term.toString()}
+                              </td>
+                              <td>
+                                {topicData.probability + '%'}
+                              </td>
+                            </div>
+                          )
+                        })}
+                      </tr>
+                    </div>
+                  )
+                })}
+              </table>
+            ) : (
+                // No content
+                <p></p>
+              )}
+          </div>
         </div>
       </div>
     )

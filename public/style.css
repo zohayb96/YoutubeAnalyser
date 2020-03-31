@@ -29,24 +29,106 @@ form div {
   align-items: left;
 }
 
-#youtube .player {
-  display: flex;
+#youtube #playerContainer {
+  /* display: flex; */
+  margin-right: 5px;
   align-items: right;
+}
+
+#youtubeLink {
+  margin-bottom: 5px;
+  border: none;
+  font-size: 12px;
+  width: 90%;
+  text-align: center
+}
+
+#textSearch {
+  margin-top: 5px;
+  border: none;
+  font-size: 12px;
+  width: 80%;
+  text-align: center
+}
+
+#youtube #playerContainer #player {
+  margin-bottom: 15px;
+}
+
+#captionTable {
+  width: 100%
+}
+
+#captionContainer {
+  display: flex
 }
 
 #youtube #captions {
   display: flex;
   overflow: auto;
-  max-height: 90vh;
+  max-height: 80vh;
+  background-color: rgb(255, 255, 255);
+  color: rgb(0, 0, 0);
+  height: fit-content
 }
 
 #youtube #topics {
   display: flex;
   overflow: auto;
-  max-height: 90vh;
+  max-height: 80vh;
+  background-color: rgb(255, 255, 255);
+  color: rgb(0, 0, 0);
+  height: fit-content
+}
+
+#youtube #keywords {
+  display: flex;
+  margin-top: 15px;
+  width: fit-content;
+  overflow: auto;
+  max-height: 30vh;
+  background-color: rgb(255, 255, 255);
+  color: rgb(0, 0, 0);
+  height: fit-content
+}
+/*
+td {
+  text-align: center;
+  vertical-align: middle;
+} */
+
+th {
+  background-color: green;
+  color: white;
 }
 
 td {
-  /* text-align: center; */
-  /* vertical-align: middle; */
+  padding: 4px;
+}
+
+tr:hover {
+  background-color: #f5f5f5;
+}
+
+html {
+  background: url('./assets/spaceWallpaper.png') no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  background-color: black
+}
+
+body {
+  color: white;
+}
+
+h1 {
+  color: white;
+}
+
+a {
+  color: green;
+  font-weight: bold;
+  font-size: 18px;
 }
