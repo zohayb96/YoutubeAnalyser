@@ -109,7 +109,8 @@ class YoutubePlayer extends Component {
 
     const video = String(this.parseLinkIntoId(this.state.videoLink))
     // AXIOS
-    const videoUrl = `http://video.google.com/timedtext?lang=en&v=${video}`
+    // const videoUrl = `https://video.google.com/timedtext?lang=en&v=${video}`
+    const videoUrl = `https://video.google.com/timedtext?lang=en&v=${video}`
     this.setState({ videoId: video })
     this.getCaptions(videoUrl)
     const captions = await axios.get(videoUrl).then(res => this.getCaptions(res));
