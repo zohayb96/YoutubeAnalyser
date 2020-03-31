@@ -25,7 +25,7 @@ class YoutubePlayer extends Component {
       search: '',
       // LDA Topic Modeling Parameters
       topicNumber: 5,
-      termNumber: 3
+      termNumber: 5
       // ?t=51 time parameter to seek to that time
     }
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -136,21 +136,16 @@ class YoutubePlayer extends Component {
     let tempTopicDict = []
     var text = 'Cats are small. Dogs are big. Cats like to chase mice. Dogs like to eat bones.';
     var documents = text.match(/[^\.!\?]+[\.!\?]+/g);
-    // console.log(documents)
     let documentSubtitles = this.getSubtitleDocFormat()
     console.log(documentSubtitles.length)
-    // console.log(documentSubtitles)
-    // Run LDA to get terms for 2 topics (5 terms each).
 
-    // Convert subtitle list into chunked array to apply keyword extraction
-    // Default is 10
-    var i, j, temparray, chunk = 10;
     let keywordsExtracted = []
 
     let sentimentDataPos = []
     let sentimentDataNeg = []
     var sentiment = new Sentiment();
 
+    // var i, j, temparray, chunk = 10;
     // for (i = 0, j = documentSubtitles.length; i < j; i += chunk) {
     //   temparray = documentSubtitles.slice(i, i + chunk);
     //   var extractionResult = keywordExtractor.extract(temparray, {
@@ -171,16 +166,15 @@ class YoutubePlayer extends Component {
       sentimentDataNeg.push(negData)
     })
 
-    // Sentiment Analysis
-    console.log(sentimentDataChunk);
-    let sentimentScoreData = sentimentDataChunk.score
-    // number of topics
-    //this.state.topicNumber
+    let posSetWords = [...new Set(sentimentDataPos)];
+    let negSetWords = [...new Set(sentimentDataNeg)]
 
-    // number of terms
-    // this.state.termsNumber
+    // Sentiment Analysis
+    let sentimentScoreData = sentimentDataChunk.score
+    // LDA Topic Modeling
     var ldaResult = lda(documentSubtitles, this.state.topicNumber, this.state.termNumber);
-    this.setState({ topics: ldaResult, posKeyWords: sentimentDataPos, negKeyWords: sentimentDataNeg, sentimentScore: sentimentScoreData })
+
+    this.setState({ topics: ldaResult, posKeyWords: posSetWords, negKeyWords: negSetWords, sentimentScore: sentimentScoreData })
   }
 
 
