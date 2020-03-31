@@ -7,6 +7,7 @@
     "build-client": "webpack",
     "build-client-watch": "webpack -w",
     "deploy": "webpack --mode production --config ./webpack.config.js",
+    "postinstall": "webpack -p",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server",
     "start-dev": "NODE_ENV='development' npm run build-client-watch & NODE_ENV='development' npm run start-server",
