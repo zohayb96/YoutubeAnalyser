@@ -346,7 +346,9 @@ class YoutubePlayer extends Component {
               </table>
             ) : (
                 // No content
-                <p></p>
+                <div>
+                  <h2>Not Available</h2>
+                </div>
               )}
           </div>
         </div>
