@@ -4,6 +4,9 @@
   bundle.js
   bundle.js.map
 
+  // createdb youtubenlp
+  // have postgreSQL running
+
 2. Create Index Html File.
 
 Setup Express Server for backend
@@ -40,3 +43,12 @@ and Add provider to the index
 
 // PArsing xml data, to get start , duration and text
 // Create table to display data
+
+      // Example Output
+      // score: -8
+      // comparative: -0.2962962962962963
+      // calculation: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+      // tokens: (27) ["kidthe", "disaster", "worried", "nuclear", "warthat's", "barrel", "basementfilled", "cans", "food", "waterwhen", "attack", "camewe", "supposed", "downstairs", "hunker", "eat", "barreltoday", "greatest", "risk", "global", "catastrophedoesn't", "thisinstead", "thisif", "kills", "million", "people", "decades"]
+      // words: (6) ["kills", "risk", "greatest", "attack", "worried", "disaster"]
+      // positive: ["greatest"]
+      // negative: (5) ["kills", "risk", "attack", "worried", "disaster"]

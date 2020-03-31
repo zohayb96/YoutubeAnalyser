@@ -27,6 +27,7 @@ form div {
 #youtube {
   display: flex;
   align-items: left;
+  /* justify-content: space-between; */
 }
 
 #youtube #playerContainer {
@@ -98,7 +99,7 @@ td {
 } */
 
 th {
-  background-color: green;
+  background-color: #005d80;
   color: white;
 }
 
@@ -127,8 +128,32 @@ h1 {
   color: white;
 }
 
-a {
-  color: green;
+/* a {
+  color: #009B82;
   font-weight: bold;
   font-size: 18px;
+} */
+
+a:link, a:visited {
+  padding: 10px 25px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  color: rgb(255, 255, 255);
+  font-weight: bold;
+  font-size: 15px;
+  border-radius: 10px;
+}
+
+a:hover, a:active {
+  background-color: #005d80
+}
+
+#navbarContainer {
+  display: flex;
+  justify-content: space-between
+}
+
+#navbar {
+
 }

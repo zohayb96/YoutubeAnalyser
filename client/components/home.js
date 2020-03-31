@@ -1,9 +1,8 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import YoutubePlayer from './youtubePlayer'
-import SubtitleTable from './subtitleTable'
 
-const Home = ({ isLoggedIn, email }) => {
+const Home = ({ isLoggedIn, username }) => {
   return (
     <React.Fragment>
       {isLoggedIn ? (
@@ -11,7 +10,6 @@ const Home = ({ isLoggedIn, email }) => {
           <div className="homeContainer">
             <div className="overlay-desc">
               <center>
-                <p>Welcome {email}</p>
                 <YoutubePlayer />
               </center>
             </div>
@@ -28,7 +26,7 @@ const Home = ({ isLoggedIn, email }) => {
 const mapStateToProps = state => {
   return {
     isLoggedIn: !!state.user.id,
-    email: state.user.email
+    username: state.user.username
   }
 }
 
