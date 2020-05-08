@@ -5,10 +5,6 @@ import PropTypes from 'prop-types'
 import { Login, Signup, UserHome, Home, YoutubePlayer } from './components'
 import { me } from './store'
 
-
-/**
- * COMPONENT
- */
 class Routes extends Component {
   componentDidMount() {
     this.props.loadInitialData()

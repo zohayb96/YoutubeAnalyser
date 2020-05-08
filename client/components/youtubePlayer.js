@@ -13,8 +13,8 @@ class YoutubePlayer extends Component {
     super(props);
     this.state = {
       // default video
-      videoId: '6Af6b_wyiwI',
-      videoLink: '',
+      videoId: 'Xe8fIjxicoo',
+      videoLink: 'https://www.youtube.com/watch?v=Xe8fIjxicoo&t=61s',
       subtitleList: [],
       seekTime: 0,
       topics: [],
@@ -61,10 +61,6 @@ class YoutubePlayer extends Component {
     console.log(this.state)
   }
 
-  removeElement(el) {
-    el && el.parentNode && el.parentNode.removeChild(el);
-  }
-
   createObject(subArray) {
     let tempSubArray = []
     var i = 0;
@@ -90,7 +86,9 @@ class YoutubePlayer extends Component {
     // Check for more xml special charachters
     // replaceSpecial.replace(/&amp;quot;/g, "'");
     let subtitleArray = replaceSpecial.split('</text>')
+    // DELETE BELOW
     this.createObject(subtitleArray)
+
     this.generateTopicModel();
   }
 
@@ -107,8 +105,6 @@ class YoutubePlayer extends Component {
 
     const video = String(this.parseLinkIntoId(this.state.videoLink))
 
-    // console.log(this.state.videoId)
-    // console.log(video)
 
     this.setState({
       topics: [],
@@ -156,18 +152,6 @@ class YoutubePlayer extends Component {
     let sentimentDataNeg = []
     var sentiment = new Sentiment();
 
-    // var i, j, temparray, chunk = 10;
-    // for (i = 0, j = documentSubtitles.length; i < j; i += chunk) {
-    //   temparray = documentSubtitles.slice(i, i + chunk);
-    //   var extractionResult = keywordExtractor.extract(temparray, {
-    //     language: "english",
-    //     remove_digits: true,
-    //     return_changed_case: true,
-    //     remove_duplicates: true,
-    //     return_chained_words: false,
-    //   });
-    //   keywordsExtracted.push(extractionResult)
-    // }
 
     let sentimentDataChunk = (sentiment.analyze(documentSubtitles.join(',')))
     sentimentDataChunk.positive.map((posData) => {
@@ -200,7 +184,6 @@ class YoutubePlayer extends Component {
 
 
   render() {
-    // console.log('currentUserFromRedux:', this.props.currentUser)
     let filteredCaptionData = this.state.subtitleList.filter((sub) => {
       return sub.text.toLowerCase().indexOf(this.state.search.toLowerCase()) !== -1
     });
@@ -323,8 +306,7 @@ class YoutubePlayer extends Component {
                       <th>%</th>
                       {topic.map((topicData, index) => {
                         return (
-                          // <div id={index}>
-                          <tbody>
+                          <tbody id={index}>
                             <tr>
                               <td onClick={() => this.setSearchParam(topicData.term.toString())}>
                                 {this.capitalize((topicData.term.toString()))}
@@ -334,10 +316,6 @@ class YoutubePlayer extends Component {
                               </td>
                             </tr>
                           </tbody>
-                          // <td>
-                          // {topicData.probability}
-                          // </td>
-                          // </div>
                         )
                       })}
                     </React.Fragment>

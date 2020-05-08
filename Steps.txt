@@ -52,3 +52,8 @@ and Add provider to the index
       // words: (6) ["kills", "risk", "greatest", "attack", "worried", "disaster"]
       // positive: ["greatest"]
       // negative: (5) ["kills", "risk", "attack", "worried", "disaster"]
+
+add postinstall scripts to package Json
+setup env variables for heroku deployment
+
+deploy to heroku

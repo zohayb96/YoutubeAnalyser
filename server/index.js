@@ -12,7 +12,7 @@ const app = express()
 const socketio = require('socket.io')
 module.exports = app
 
-// This is a global Mocha hook, used for resource cleanup.
+// used for resource cleanup.
 if (process.env.NODE_ENV === 'test') {
   after('close the session store', () => sessionStore.stopExpiringSessions())
 }
@@ -64,7 +64,6 @@ const createApp = () => {
   // static file-serving middleware
   app.use(express.static(path.join(__dirname, '..', 'public')))
 
-  // any remaining requests with an extension (.js, .css, etc.) send 404
   app.use((req, res, next) => {
     if (path.extname(req.path).length) {
       const err = new Error('Not found')
@@ -89,9 +88,9 @@ const createApp = () => {
 }
 
 const startListening = () => {
-  // start listening (and create a 'server' object representing our server)
+  // Create server object
   const server = app.listen(PORT, () =>
-    console.log(`Mixing it up on port ${PORT}`)
+    console.log(`Running on ${PORT}`)
   )
 
   // set up our socket control center
