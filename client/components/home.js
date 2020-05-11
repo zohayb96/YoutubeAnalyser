@@ -1,6 +1,7 @@
-import React from 'react'
-import { connect } from 'react-redux'
-import YoutubePlayer from './youtubePlayer'
+import React from 'react';
+import { connect } from 'react-redux';
+import YoutubePlayer from './youtubePlayer';
+// Main page of application, renders youtube player component when logged in
 
 const Home = ({ isLoggedIn, username }) => {
   return (
@@ -16,18 +17,17 @@ const Home = ({ isLoggedIn, username }) => {
           </div>
         </center>
       ) : (
-          <center>
-          </center>
-        )}
+        <center></center>
+      )}
     </React.Fragment>
-  )
-}
+  );
+};
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
     isLoggedIn: !!state.user.id,
-    username: state.user.username
-  }
-}
+    username: state.user.username,
+  };
+};
 
-export default connect(mapStateToProps, null)(Home)
+export default connect(mapStateToProps, null)(Home);

@@ -1,17 +1,18 @@
-import React, { Component } from 'react'
-import { connect } from 'react-redux'
-import { withRouter, Route, Switch } from 'react-router-dom'
-import PropTypes from 'prop-types'
-import { Login, Signup, UserHome, Home, YoutubePlayer } from './components'
-import { me } from './store'
+// Page has all corresponding route pages implemented with components corresponding to the revelant route path
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { withRouter, Route, Switch } from 'react-router-dom';
+import PropTypes from 'prop-types';
+import { Login, Signup, UserHome, Home, YoutubePlayer } from './components';
+import { me } from './store';
 
 class Routes extends Component {
   componentDidMount() {
-    this.props.loadInitialData()
+    this.props.loadInitialData();
   }
 
   render() {
-    const { isLoggedIn } = this.props
+    const { isLoggedIn } = this.props;
 
     return (
       <Switch>
@@ -22,40 +23,38 @@ class Routes extends Component {
         {isLoggedIn && (
           <Switch>
             {/* Routes placed here are only available after logging in */}
-            <Route path="/home" component={props => <Home {...props} />} />
+            <Route path="/home" component={(props) => <Home {...props} />} />
           </Switch>
         )}
         {/* Displays our Login component as a fallback */}
         <Route exact path="/" component={Home} />
         <Route component={Login} />
       </Switch>
-    )
+    );
   }
 }
 
-
-const mapState = state => {
+// Getting the logged in user from the redux state helps identify which routes should be accessible
+const mapState = (state) => {
   return {
-    isLoggedIn: !!state.user.id
-  }
-}
+    isLoggedIn: !!state.user.id,
+  };
+};
 
-const mapDispatch = dispatch => {
+const mapDispatch = (dispatch) => {
   return {
     loadInitialData() {
-      dispatch(me())
-    }
-  }
-}
+      dispatch(me());
+    },
+  };
+};
 
 // The `withRouter` wrapper makes sure that updates are not blocked
 // when the url changes
-export default withRouter(connect(mapState, mapDispatch)(Routes))
+export default withRouter(connect(mapState, mapDispatch)(Routes));
 
-/**
- * PROP TYPES
- */
+// Props accessible on the routes page
 Routes.propTypes = {
   loadInitialData: PropTypes.func.isRequired,
-  isLoggedIn: PropTypes.bool.isRequired
-}
+  isLoggedIn: PropTypes.bool.isRequired,
+};

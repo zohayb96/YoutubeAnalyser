@@ -1,8 +1,9 @@
-import {createMemoryHistory, createBrowserHistory} from 'history'
+// React router implmentation to allow history for deployed application
+import { createMemoryHistory, createBrowserHistory } from 'history';
 
 const history =
   process.env.NODE_ENV === 'test'
     ? createMemoryHistory()
-    : createBrowserHistory()
+    : createBrowserHistory();
 
-export default history
+export default history;

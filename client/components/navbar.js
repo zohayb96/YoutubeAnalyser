@@ -1,13 +1,15 @@
-import React from 'react'
-import PropTypes from 'prop-types'
-import { connect } from 'react-redux'
-import { Link } from 'react-router-dom'
-import { logout } from '../store'
+import React from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
+import { logout } from '../store';
+
+// Navbar implementation component to allow nacigation between main page and sign up / log in page for users
 
 const Navbar = ({ handleClick, isLoggedIn, username }) => (
   <div id="navbarContainer">
     <h1>Youtube Analyser</h1>
-    {username ? (<h3>Username: {username}</h3>) : (<p></p>)}
+    {username ? <h3>Username: {username}</h3> : <p></p>}
     <nav>
       {isLoggedIn ? (
         <div id="navbar">
@@ -18,35 +20,34 @@ const Navbar = ({ handleClick, isLoggedIn, username }) => (
           </a>
         </div>
       ) : (
-          <div>
-            {/* Links available pre logging in */}
-            <Link to="/login">Login</Link>
-            <Link to="/signup">Sign Up</Link>
-          </div>
-        )}
+        <div>
+          {/* Links available pre logging in */}
+          <Link to="/login">Login</Link>
+          <Link to="/signup">Sign Up</Link>
+        </div>
+      )}
     </nav>
   </div>
-)
+);
 
-const mapState = state => {
+const mapState = (state) => {
   return {
     isLoggedIn: !!state.user.id,
-    username: state.user.username
-  }
-}
+    username: state.user.username,
+  };
+};
 
-const mapDispatch = dispatch => {
+const mapDispatch = (dispatch) => {
   return {
     handleClick() {
-      dispatch(logout())
-    }
-  }
-}
+      dispatch(logout());
+    },
+  };
+};
 
-export default connect(mapState, mapDispatch)(Navbar)
-
+export default connect(mapState, mapDispatch)(Navbar);
 
 Navbar.propTypes = {
   handleClick: PropTypes.func.isRequired,
-  isLoggedIn: PropTypes.bool.isRequired
-}
+  isLoggedIn: PropTypes.bool.isRequired,
+};
